@@ -2,12 +2,32 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const Listing = require("./models/listing.js");
+const Review = require("./models/review.js");
 const path = require("path");
 const methodOverride = require('method-override')
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js")
 const ExpressError = require("./utils/ExpressError.js");
 const { error } = require("console");
+const review = require("./models/review.js");
+const session = require("express-session");
+const flash = require("connect-flash");
+const listing = require("./routes/listing.js");
+const reviews = require("./routes/review.js");
+const passport = require("passport");
+const localStrategy = require("passport-local");
+const User = require("./models/user.js")
+
+const sessionOption = {
+    secret : "mysecretcode",
+    resave : false,
+    saveUninitialized : true,
+    cookie :{
+        expires : Date.now() + 7 * 24 * 60 * 60 * 1000,
+        maxAge : 7 * 24 * 60 * 60 * 1000,
+        httpOnly : true
+    }
+};
 
 main().then((res)=>{console.log("Connected to Database")})
 .catch(err => console.log(err));
@@ -23,65 +43,28 @@ app.use(express.urlencoded({extended : true}));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname,"/public")));
 
+
 app.get("/",(req,res)=>{
     res.send("Hi,I am root");
 })
 
-//Index Route
-app.get("/listing",wrapAsync(async (req,res)=>{
-    const allListings =await Listing.find({});
-    res.render("listings/index.ejs",{allListings});
-}));
+app.use(session(sessionOption));
+app.use(flash());
 
-//CREATE NEW
-app.get("/listing/new",(req,res)=>{
-    res.render("listings/new");
-});
-app.post("/listing/new",
-    wrapAsync(async(req,res)=>{
-        let {title,url,description,price,location,country}=req.body;
-        let addNew = new Listing({
-            title,
-            description,
-            image: { filename: 'listingimage', url },
-            price,
-            location,
-            country
-        });
-        await addNew.save();
-        res.redirect("/listing");
-    })
-);
 
-//EDIT
-app.put("/listing/edit/:id",wrapAsync(async(req,res)=>{
-    let {id} = req.params;
-    let {title,url,description,price,location,country}=req.body;
-    await Listing.findByIdAndUpdate(id,{title : title,description : description,image : { filename: 'listingimage',url:url},price : price,location : location,country:country}).
-    then((res)=>{console.log(`${id} edited successfully`)})
-    .catch((err)=>{console.log(err)});
+app.use((req,res,next)=>{
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+    next();
+})
 
-    res.redirect(`/listing/${id}`);
-}));
-//DELETE
-app.delete("/listing/:id",wrapAsync(async (req,res)=>{
-    let id = req.params.id;
-    await Listing.findByIdAndDelete(id);
-    res.redirect("/listing");
-}));
+app.use("/listing",listing);
+app.use("/listings/:id/reviews",reviews);
 
-//Show Route
-app.get("/listing/:id",wrapAsync(async(req,res)=>{
-    let id = req.params.id;
-    const details = await Listing.findById(id);
-    res.render("listings/show",{details});
-}));
+//Reviews
+//Post
 
-app.get("/listing/edit/:id",wrapAsync(async(req,res)=>{
-    let id = req.params.id;
-    const details = await Listing.findById(id);
-    res.render("listings/edit",{details});
-}));
+
 
 app.all(/.*/, (req, res, next) => {
     next(new ExpressError(404, "Page Not Found"));
