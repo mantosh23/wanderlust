@@ -5,6 +5,8 @@ const ExpressError = require("../utils/ExpressError.js");
 const Listing = require("../models/listing.js");
 const review = require("../models/review.js");
 const flash = require("express-flash");
+const user = require("../models/user.js");
+const {isLoggedIn, isOwner} = require("../middleware.js");
 
 //Index Route
 router.get("/",wrapAsync(async (req,res)=>{
@@ -13,7 +15,7 @@ router.get("/",wrapAsync(async (req,res)=>{
 }));
 
 //CREATE NEW
-router.get("/new",(req,res)=>{
+router.get("/new",isLoggedIn,(req,res)=>{
     res.render("listings/new");
 });
 router.post("/new",
@@ -27,6 +29,7 @@ router.post("/new",
             location,
             country
         });
+        addNew.owner = req.user._id;
         await addNew.save();
         req.flash("success","New Listing Created!");
         res.redirect("/listing");
@@ -34,7 +37,7 @@ router.post("/new",
 );
 
 //EDIT
-router.put("/edit/:id",wrapAsync(async(req,res)=>{
+router.put("/edit/:id",isLoggedIn,isOwner,wrapAsync(async(req,res)=>{
     let {id} = req.params;
     let {title,url,description,price,location,country}=req.body;
     await Listing.findByIdAndUpdate(id,{title : title,description : description,image : { filename: 'listingimage',url:url},price : price,location : location,country:country}).
@@ -44,7 +47,7 @@ router.put("/edit/:id",wrapAsync(async(req,res)=>{
     res.redirect(`/listing/${id}`);
 }));
 //DELETE
-router.delete("/:id",wrapAsync(async (req,res)=>{
+router.delete("/:id",isLoggedIn,isOwner,wrapAsync(async (req,res)=>{
     let id = req.params.id;
     await Listing.findByIdAndDelete(id);
      req.flash("success","Listing Deleted!");
@@ -54,7 +57,7 @@ router.delete("/:id",wrapAsync(async (req,res)=>{
 //Show Route
 router.get("/:id",wrapAsync(async(req,res)=>{
     let id = req.params.id;
-    const details = await Listing.findById(id).populate("reviews");
+    const details = await Listing.findById(id).populate({path : "reviews", populate : {path : "author"}}).populate("owner");
     if(!details){
         req.flash("error","Listing doesn't exists");
         res.redirect("/listing")
@@ -63,7 +66,7 @@ router.get("/:id",wrapAsync(async(req,res)=>{
 }));
 
 
-router.get("/edit/:id",wrapAsync(async(req,res)=>{
+router.get("/edit/:id",isLoggedIn,isOwner,wrapAsync(async(req,res)=>{
     let id = req.params.id;
     const details = await Listing.findById(id);
     res.render("listings/edit",{details});
