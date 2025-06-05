@@ -9,27 +9,8 @@ const listingSchema = new Schema({
     },
     description : String,
     image: {
-        type: {
-          filename: {
-            type: String,
-            default: "listingimage"
-          },
-          url: {
-            type: String,
-            default:
-              "https://unsplash.com/photos/white-bed-linen-with-throw-pillows-Yrxr3bsPdS0"
-          }
-        },
-        default: undefined,
-        set: function (v) {
-          return {
-            filename: v?.filename || "listingimage",
-            url:
-              v?.url && v.url !== ""
-                ? v.url
-                : "https://unsplash.com/photos/white-bed-linen-with-throw-pillows-Yrxr3bsPdS0"
-          };
-        }
+        url : String,
+        filename : String
     },
     price : {
         type : Number,
@@ -50,7 +31,45 @@ const listingSchema = new Schema({
     owner : {
       type : Schema.Types.ObjectId,
       ref : "User"
-    }
+    },
+    geometry : {
+    type: {
+      type: String, // Don't do `{ location: { type: String } }`
+      enum: ['Point'], // 'location.type' must be 'Point'
+      required: true
+    },
+    coordinates: {
+      type: [Number],
+      required: true
+    },
+  },
+  category: {
+  type: String,
+  enum: [
+    'budget',
+    'standard',
+    'deluxe',
+    'luxury',
+    'boutique',
+    'resort',
+    'business',
+    'heritage',
+    'homestay',
+    'hostel',
+    'eco-friendly',
+    'airport hotel',
+    'bed & breakfast',
+    'serviced apartment',
+    'capsule hotel',
+    'treehouse',
+    'villa',
+    'motel',
+    'palace hotel',
+    'wellness retreat'
+  ],
+  required: true
+}
+
 });
 
 listingSchema.post("findOneAndDelete",async(listing)=>{

@@ -1,47 +1,118 @@
 <% layout("/layouts/boilerplate") %>
+<style>
+  select.form-select {
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  select.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+</style>
+
 <body>
-    <div class="row">
-        <div class="col-8 offset-2">
-            <br><br>
-            <h3>Create New Listings</h3>
-            <form action="/listing/new" method="post" novalidate class="needs-validation">
-                <div class="mb-3">
-                    <label for="title" class="form-label">Title</label>
-                    <input name = "title" type="text" placeholder="Enter title" class="form-control" required>
-                    <div class="valid-feedback">
-                        Looks good!
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea name="description" cols="70" placeholder="Enter Description"  class="form-control" required></textarea>
-                    <div class="invalid-feedback">Please enter a short description</div>
-                </div>
-                <div class="mb-3">
-                    <label for="url" class="form-label">Image Link</label>
-                    <input name = "url" type="text" placeholder="Enter image url" class="form-control">
-                </div>
-                <div class="row">
-                        <div class="mb-3 col-md-4">
-                            <label for="price" class="form-label">Price</label>
-                            <input name = "price" type="number" placeholder="1200" class="form-control" required>
-                            <div class="invalid-feedback">Price should be valid</div>
-                        </div>
-                        <div class="mb-3 col-md-8">
-                            <label for="country" class="form-label">Country</label>
-                            <input name = "country" type="country" placeholder="India" class="form-control" required>
-                            <div class="invalid-feedback">Country Name should be valid</div>
-                        </div>
-                </div>
-                <div class="mb-3">
-                    <label for="location" class="form-label">Location</label>
-                    <input name = "location" type="location" placeholder="Jaipur, Rajasthan" class="form-control" required>
-                    <div class="invalid-feedback">Location should be valid</div>
-                </div>
-                <br><br>
-                <button class="btn add-btn" type="submit">Add</button>
-                <br><br>
-            </form>
+  <div class="row">
+    <div class="col-8 offset-2">
+      <br /><br />
+      <h3>Create New Listings</h3>
+      <form
+        action="/listing/new"
+        method="post"
+        novalidate
+        class="needs-validation"
+        enctype="multipart/form-data"
+      >
+        <div class="mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input
+            name="title"
+            type="text"
+            placeholder="Enter title"
+            class="form-control"
+            required
+          />
+          <div class="valid-feedback">Looks good!</div>
         </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea
+            name="description"
+            cols="70"
+            placeholder="Enter Description"
+            class="form-control"
+            required
+          ></textarea>
+          <div class="invalid-feedback">Please enter a short description</div>
+        </div>
+        <div class="mb-3">
+          <label for="category" class="form-label">Select Hotel Category</label>
+          <select class="form-select" id="category" name="category" required>
+            <option value="" disabled selected>Select a category</option>
+            <option value="budget">Budget</option>
+            <option value="standard">Standard</option>
+            <option value="deluxe">Deluxe</option>
+            <option value="luxury">Luxury</option>
+            <option value="boutique">Boutique</option>
+            <option value="resort">Resort</option>
+            <option value="business">Business</option>
+            <option value="heritage">Heritage</option>
+            <option value="homestay">Homestay</option>
+            <option value="hostel">Hostel</option>
+            <option value="eco-friendly">Eco-Friendly</option>
+            <option value="airport hotel">Airport Hotel</option>
+            <option value="bed & breakfast">Bed & Breakfast</option>
+            <option value="serviced apartment">Serviced Apartment</option>
+            <option value="capsule hotel">Capsule Hotel</option>
+            <option value="treehouse">Treehouse</option>
+            <option value="villa">Villa</option>
+            <option value="motel">Motel</option>
+            <option value="palace hotel">Palace Hotel</option>
+            <option value="wellness retreat">Wellness Retreat</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="image" class="form-label">Upload Image</label>
+          <input name="image" type="file" class="form-control" />
+        </div>
+        <div class="row">
+          <div class="mb-3 col-md-4">
+            <label for="price" class="form-label">Price</label>
+            <input
+              name="price"
+              type="number"
+              placeholder="1200"
+              class="form-control"
+              required
+            />
+            <div class="invalid-feedback">Price should be valid</div>
+          </div>
+          <div class="mb-3 col-md-8">
+            <label for="country" class="form-label">Country</label>
+            <input
+              name="country"
+              type="country"
+              placeholder="India"
+              class="form-control"
+              required
+            />
+            <div class="invalid-feedback">Country Name should be valid</div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="location" class="form-label">Location</label>
+          <input
+            name="location"
+            type="location"
+            placeholder="Jaipur, Rajasthan"
+            class="form-control"
+            required
+          />
+          <div class="invalid-feedback">Location should be valid</div>
+        </div>
+        <br /><br />
+        <button class="btn add-btn" type="submit">Add</button>
+        <br /><br />
+      </form>
     </div>
+  </div>
 </body>
