@@ -23,7 +23,7 @@ const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 
 const sessionOption = {
-  secret: "mysecretcode",
+  secret: process.env.SESSION_SECRET || "polopolo",
   resave: false,
   saveUninitialized: true,
   cookie: {
