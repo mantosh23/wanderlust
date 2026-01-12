@@ -5,7 +5,7 @@ const wrapAsync = require("../utils/wrapAsync.js");
 const passport = require("passport");
 const { saveRedirectURL } = require("../middleware.js");
 
-app.get("/", (req, res) => {
+router.get("/", (req, res) => {
   res.redirect("/listing");
 });
 
